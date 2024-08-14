@@ -114,7 +114,7 @@
   },
   "scripts": {
     "build": "echo 'No build step required'",
-    "start": "node index.js",
+    "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
