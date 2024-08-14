@@ -14,9 +14,8 @@ app.use(express.json());
 
 
 app.get('/', (req, res) => {
-    res.sendFile('index.html', { root: './public' }); // Serve the HTML file
-});
-
+    res.send("<h1>Hello World</h1>")
+})
 
 app.get('/foodItemsData', async (req, res) => {
     try {
