@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const path = require('path');
 const port = 5000; // Ensure the port is free and not conflicting
 const cors = require('cors');
 require('./db/conn');
@@ -14,7 +15,7 @@ app.use(express.json());
 
 
 app.get('/', (req, res) => {
-    res.send("<h1>Hello World</h1>")
+    res.send(path.join(__dirname, 'index.html'));
 })
 
 app.get('/foodItemsData', async (req, res) => {
