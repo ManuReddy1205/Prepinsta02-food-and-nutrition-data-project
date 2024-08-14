@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food and Nutrition Data</title>
+    <link rel="stylesheet" href="./public/css/index.css">
+    <style>
+        
+        h1{
+            text-align: center;
+            color: palevioletred;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse; /* Ensures that borders are shared between cells */
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid black; /* Adds a solid black border to all table cells */
+            padding: 8px;
+            text-align: left; /* Aligns text to the left */
+        }
+
+        th {
+            background-color: #f2f2f2; /* Optional: Adds a background color to the header */
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9; /* Optional: Adds zebra striping for better readability */
+        }
+
+        .delete-button {
+            background-color: blue;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .delete-button:hover {
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Food and Nutrition Data</h1>
+    <div id="food_container"></div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Food Item Name</th>
+                <th>Food Group</th>
+                <th>Description</th>
+                <th>Nutritional Information</th>
+                <th>Allergens</th>
+                <th>Ingredients</th>
+                <th>Certifications</th>
+                <th>Dietary Restrictions</th>
+                <th>Serving Size</th>
+                <th>Country Of Origin</th>
+                <th>Brand Or Manufacturer</th>
+                <th>Health Benefits</th>
+                <th>Best Practices</th>
+                <th>Action</th> <!-- New column for delete button -->
+            </tr>
+        </thead>
+        <tbody id="tableRows"></tbody>
+    </table>
+
+    <script>
+        // Fetch data from the API
+        fetch('http://localhost:5000/foodItemsData')
+        .then(res => res.json())
+        .then(res => {
+            console.log('API Response:', res); 
+            const data = res;
+
+            // Check if data is valid and an array
+            if (Array.isArray(data)) {
+                let rows = '';
+                data.forEach((food, index) => {
+                    rows += `<tr id="row-${index}"  data-id="${food._id}">
+                        <td>${food.foodItemName}</td>
+                        <td>${food.foodGroup}</td>
+                        <td>${food.description}</td>
+                        <td>${food.nutritionalInformation}</td>
+                        <td>${food.allergens}</td>
+                        <td>${food.ingredients}</td>
+                        <td>${food.certifications}</td>
+                        <td>${food.dietaryRestrictions}</td>
+                        <td>${food.servingSize}</td>
+                        <td>${food.countryOfOrigin}</td>
+                        <td>${food.brandOrManufacturer}</td>
+                        <td>${food.healthBenefits}</td>
+                        <td>${food.bestPractices}</td>
+                        <td><button class="delete-button" onclick="deleteRow(${index})">Delete</button></td>
+                    </tr>`;
+                });
+                document.getElementById('tableRows').innerHTML = rows;
+            } else {
+                console.error('Data is not an array or is invalid:', data);
+            }
+        })
+        .catch(error => console.log('Error fetching data:', error));
+
+        // Function to delete a row
+    function deleteRow(index) {
+        const row = document.getElementById(`row-${index}`);
+        const foodId = row.getAttribute('data-id');
+
+        if (foodId) {
+            fetch(`http://localhost:5000/deleteFoodItem/${foodId}`, {
+                method: 'DELETE',
+            })
+            .then(res => res.json())
+            .then(response => {
+                if (response.message === 'Record deleted successfully') {
+                    row.remove(); // Remove the row from the table
+                    console.log('Record deleted successfully');
+                } else {
+                    console.error('Error:', response.message);
+                }
+            })
+            .catch(error => console.error('Error deleting record:', error));
+        } else {
+            console.error('Food ID not found');
+        }
+}
+
+    </script>
+</body>
+</html>
