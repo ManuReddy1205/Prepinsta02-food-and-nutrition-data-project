@@ -15,7 +15,7 @@ app.use(express.json());
 
 
 app.get('/', (req, res) => {
-    res.send(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 })
 
 app.get('/foodItemsData', async (req, res) => {
