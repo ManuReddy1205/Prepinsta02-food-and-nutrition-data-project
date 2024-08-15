@@ -2,29 +2,27 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const path = require('path');
-const port = 5000; // Ensure the port is free and not conflicting
 const cors = require('cors');
+const port = 5000; 
 require('./db/conn');
 const foodItem = require('./models/foodSchema');
 const foodData = require('./foodData.json');
 
-
 app.use(bodyParser.json());
-app.use(cors())
+app.use(cors());
 app.use(express.json());
-
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
-})
+});
 
 app.get('/foodItemsData', async (req, res) => {
     try {
         const foodItemData = await foodItem.find({});
-        res.status(200).json(foodItemData); // Correctly send JSON data with status 200
+        res.status(200).json(foodItemData); 
     } catch (e) {
         console.log(e);
-        res.status(500).send('Internal Server Error'); // Send error response if an exception occurs
+        res.status(500).send('Internal Server Error'); 
     }
 });
 
@@ -33,8 +31,6 @@ app.get('/', (req, res) => {
 });
 
 
-
-// Add this route to handle deletion
 app.delete('/deleteFoodItem/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -49,15 +45,50 @@ app.delete('/deleteFoodItem/:id', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+app.put('/updateFoodItem/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedData = req.body;
+
+        console.log('Received data for update:', updatedData);
+
+        const updatedRecord = await foodItem.findByIdAndUpdate(id, updatedData, { new: true });
+
+        if (updatedRecord) {
+            res.status(200).json({ message: 'Record updated successfully', updatedRecord });
+        } else {
+            res.status(404).json({ message: 'Record not found' });
+        }
+    } catch (e) {
+        console.log('Error updating record:', e);
+        res.status(500).json({ message: 'Internal Server Error', error: e.message });
+    }
+});
+
+
+app.put('/updateFoodItem/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedRecord = await foodItem.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+        if (updatedRecord) {
+            res.status(200).json({ message: 'Record updated successfully', updatedRecord });
+        } else {
+            res.status(404).json({ message: 'Record not found' });
+        }
+    } catch (e) {
+        console.log(e);
+        res.status(500).send('Internal Server Error');
+    }
+});
 
 
 app.post('/saveFoods', async (req, res) => {
     try {
         const newRecord = await foodItem.create(req.body);
-        res.status(201).json({ newRecord }); // Send newly created record with status 201
+        res.status(201).json({ newRecord }); 
     } catch (e) {
         console.log(e);
-        res.status(500).send('Internal Server Error'); // Send error response if an exception occurs
+        res.status(500).send('Internal Server Error'); 
     }
 });
 

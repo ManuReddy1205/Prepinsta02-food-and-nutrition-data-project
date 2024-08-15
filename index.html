@@ -5,33 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food and Nutrition Data</title>
     <style>
-        
-        h1{
+        h1 {
             text-align: center;
-            color: palevioletred;
+            color: rgb(35, 31, 33);
         }
         table {
             width: 100%;
-            border-collapse: collapse; /* Ensures that borders are shared between cells */
+            border-collapse: collapse;
             margin-top: 20px;
         }
 
         th, td {
-            border: 1px solid black; /* Adds a solid black border to all table cells */
-            padding: 8px;
-            text-align: left; /* Aligns text to the left */
+            border: 1px solid black; 
+            background: linear-gradient(rgb(201, 230, 100), white) padding-box,
+                    linear-gradient(rgb(227, 214, 214), black) border-box;
+            border-width: 3px; 
+            padding: 10px; 
+            text-align: left; 
+            
         }
-
-        th {
-            background-color: #f2f2f2; /* Optional: Adds a background color to the header */
+        th{
+            color: rgb(162, 54, 130);
         }
-
-        tbody tr:nth-child(even) {
-            background-color: #f9f9f9; /* Optional: Adds zebra striping for better readability */
+        td{
+           color: rgb(29, 7, 108);
         }
-
-        .delete-button {
+        .edit-button {
             background-color: blue;
+            color: white;
+            border: none;
+            padding: 5px 18px;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+        .delete-button{
+            background-color: red;
             color: white;
             border: none;
             padding: 5px 10px;
@@ -39,7 +47,15 @@
         }
 
         .delete-button:hover {
-            background-color: red;
+            background-color: rgb(207, 88, 88);
+            border-radius: 5px;
+            transition: all .6s ease-out;
+        }
+
+        .edit-button:hover {
+            background-color: green;
+            border-radius: 5px;
+            transition: all .6s ease-out;
         }
     </style>
 </head>
@@ -62,25 +78,25 @@
                 <th>Brand Or Manufacturer</th>
                 <th>Health Benefits</th>
                 <th>Best Practices</th>
-                <th>Action</th> <!-- New column for delete button -->
+                <th>Actions</th> 
             </tr>
         </thead>
         <tbody id="tableRows"></tbody>
     </table>
 
     <script>
-        // Fetch data from the API
+        
         fetch('http://localhost:5000/foodItemsData')
         .then(res => res.json())
         .then(res => {
             console.log('API Response:', res); 
             const data = res;
 
-            // Check if data is valid and an array
+            
             if (Array.isArray(data)) {
                 let rows = '';
                 data.forEach((food, index) => {
-                    rows += `<tr id="row-${index}"  data-id="${food._id}">
+                    rows += `<tr id="row-${index}" data-id="${food._id}">
                         <td>${food.foodItemName}</td>
                         <td>${food.foodGroup}</td>
                         <td>${food.description}</td>
@@ -94,7 +110,10 @@
                         <td>${food.brandOrManufacturer}</td>
                         <td>${food.healthBenefits}</td>
                         <td>${food.bestPractices}</td>
-                        <td><button class="delete-button" onclick="deleteRow(${index})">Delete</button></td>
+                        <td>
+                            <button class="edit-button" onclick="editRow(${index})">Edit</button>
+                            <button class="delete-button" onclick="deleteRow(${index})">Delete</button>
+                        </td>
                     </tr>`;
                 });
                 document.getElementById('tableRows').innerHTML = rows;
@@ -104,29 +123,110 @@
         })
         .catch(error => console.log('Error fetching data:', error));
 
-        // Function to delete a row
-    function deleteRow(index) {
-        const row = document.getElementById(`row-${index}`);
-        const foodId = row.getAttribute('data-id');
+        
+        function deleteRow(index) {
+            const row = document.getElementById(`row-${index}`);
+            const foodId = row.getAttribute('data-id');
 
-        if (foodId) {
-            fetch(`http://localhost:5000/deleteFoodItem/${foodId}`, {
-                method: 'DELETE',
-            })
-            .then(res => res.json())
-            .then(response => {
-                if (response.message === 'Record deleted successfully') {
-                    row.remove(); // Remove the row from the table
-                    console.log('Record deleted successfully');
-                } else {
-                    console.error('Error:', response.message);
-                }
-            })
-            .catch(error => console.error('Error deleting record:', error));
-        } else {
-            console.error('Food ID not found');
+            if (foodId) {
+                fetch(`http://localhost:5000/deleteFoodItem/${foodId}`, {
+                    method: 'DELETE',
+                })
+                .then(res => res.json())
+                .then(response => {
+                    if (response.message === 'Record deleted successfully') {
+                        row.remove(); // Remove the row from the table
+                        console.log('Record deleted successfully');
+                    } else {
+                        console.error('Error:', response.message);
+                    }
+                })
+                .catch(error => console.error('Error deleting record:', error));
+            } else {
+                console.error('Food ID not found');
+            }
         }
+
+        
+        function editRow(index) {
+    const row = document.getElementById(`row-${index}`);
+    const foodId = row.getAttribute('data-id');
+
+    if (foodId) {
+        const foodItemName = prompt("Enter new Food Item Name:", row.cells[0].innerText);
+        const foodGroup = prompt("Enter new Food Group:", row.cells[1].innerText);
+        const description = prompt("Enter new Description:", row.cells[2].innerText);
+        const nutritionalInformation = prompt("Enter new Nutritional Information:", row.cells[3].innerText);
+        const allergens = prompt("Enter new Allergens:", row.cells[4].innerText);
+        const ingredients = prompt("Enter new Ingredients:", row.cells[5].innerText);
+        const certifications = prompt("Enter new Certifications:", row.cells[6].innerText);
+        const dietaryRestrictions = prompt("Enter new Dietary Restrictions:", row.cells[7].innerText);
+        const servingSize = prompt("Enter new Serving Size:", row.cells[8].innerText);
+        const countryOfOrigin = prompt("Enter new Country Of Origin:", row.cells[9].innerText);
+        const brandOrManufacturer = prompt("Enter new Brand Or Manufacturer:", row.cells[10].innerText);
+        const healthBenefits = prompt("Enter new Health Benefits:", row.cells[11].innerText);
+        const bestPractices = prompt("Enter new Best Practices:", row.cells[12].innerText);
+
+        const updatedFoodItem = {
+            foodItemName: foodItemName || row.cells[0].innerText,
+            foodGroup: foodGroup || row.cells[1].innerText,
+            description: description || row.cells[2].innerText,
+            nutritionalInformation: nutritionalInformation || row.cells[3].innerText,
+            allergens: allergens || row.cells[4].innerText,
+            ingredients: ingredients || row.cells[5].innerText,
+            certifications: certifications || row.cells[6].innerText,
+            dietaryRestrictions: dietaryRestrictions || row.cells[7].innerText,
+            servingSize: servingSize || row.cells[8].innerText,
+            countryOfOrigin: countryOfOrigin || row.cells[9].innerText,
+            brandOrManufacturer: brandOrManufacturer || row.cells[10].innerText,
+            healthBenefits: healthBenefits || row.cells[11].innerText,
+            bestPractices: bestPractices || row.cells[12].innerText,
+        };
+
+        console.log('Data to be sent for update:', JSON.stringify(updatedFoodItem));
+
+        fetch(`http://localhost:5000/updateFoodItem/${foodId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedFoodItem)
+        })
+        .then(res => {
+            if (!res.ok) {
+                return res.text().then(text => { throw new Error(text) });
+            }
+            return res.json();
+        })
+        .then(response => {
+            if (response.message === 'Record updated successfully') {
+                row.cells[0].innerText = updatedFoodItem.foodItemName;
+                row.cells[1].innerText = updatedFoodItem.foodGroup;
+                row.cells[2].innerText = updatedFoodItem.description;
+                row.cells[3].innerText = updatedFoodItem.nutritionalInformation;
+                row.cells[4].innerText = updatedFoodItem.allergens;
+                row.cells[5].innerText = updatedFoodItem.ingredients;
+                row.cells[6].innerText = updatedFoodItem.certifications;
+                row.cells[7].innerText = updatedFoodItem.dietaryRestrictions;
+                row.cells[8].innerText = updatedFoodItem.servingSize;
+                row.cells[9].innerText = updatedFoodItem.countryOfOrigin;
+                row.cells[10].innerText = updatedFoodItem.brandOrManufacturer;
+                row.cells[11].innerText = updatedFoodItem.healthBenefits;
+                row.cells[12].innerText = updatedFoodItem.bestPractices;
+
+                console.log('Record updated successfully');
+            } else {
+                console.error('Error:', response.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error updating record:', error);
+        });
+    } else {
+        console.error('Food ID not found');
+    }
 }
+
 
     </script>
 </body>

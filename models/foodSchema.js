@@ -17,10 +17,10 @@ const foodSchema = new mongoose.Schema({
     sodium: Number,
     cholesterol: Number,
   },
-  allergens: [String], // Array of strings
-  ingredients: [String], // Array of strings
-  certifications: [String], // Array of strings
-  dietaryRestrictions: [String], // Array of strings
+  allergens: [String],
+  ingredients: [String], 
+  certifications: [String], 
+  dietaryRestrictions: [String],
   servingSize: String,
   countryOfOrigin: String,
   brandOrManufacturer: String,
